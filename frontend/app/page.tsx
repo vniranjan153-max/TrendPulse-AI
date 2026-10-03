@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowUpRight, BrainCircuit, Radar, Sparkles, TrendingUp } from "lucide-react";
 
 const trends = [
@@ -14,7 +15,8 @@ export default function Home() {
         <div className="navlinks">
           <a href="#trends">Trends</a>
           <a href="#features">Features</a>
-          <a className="button ghost" href="http://localhost:8000/docs">API Docs</a>
+          <Link className="button ghost" href="/login">Login</Link>
+          <Link className="button primary" href="/dashboard">Open dashboard</Link>
         </div>
       </nav>
 
@@ -26,8 +28,8 @@ export default function Home() {
           focused dashboard for creators, builders, and researchers.
         </p>
         <div className="actions">
-          <a className="button primary" href="#trends">Explore trends <ArrowUpRight size={17} /></a>
-          <a className="button ghost" href="#features">How it works</a>
+          <Link className="button primary" href="/dashboard">Explore trends <ArrowUpRight size={17} /></Link>
+          <Link className="button ghost" href="/register">Create account</Link>
         </div>
       </section>
 
