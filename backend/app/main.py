@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,13 +10,14 @@ from .config import settings
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.3.0",
+    version="0.3.1",
     description="Backend API for TrendPulse AI.",
 )
 
+allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,6 +34,11 @@ def health() -> dict[str, str]:
         "service": settings.app_name,
         "time": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get("/api/ready")
+def ready() -> dict[str, str]:
+    return {"status": "ready"}
 
 
 @app.get("/api/trends/demo")
