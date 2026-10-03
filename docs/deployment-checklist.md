@@ -2,7 +2,15 @@
 
 Use this checklist before you ship TrendPulse AI.
 
-## Backend
+## Frontend (Vercel)
+- [ ] Connect the `frontend/` app to Vercel
+- [ ] Set `NEXT_PUBLIC_API_URL` to the backend URL
+- [ ] Verify login page
+- [ ] Verify register page
+- [ ] Verify dashboard redirect behavior
+- [ ] Verify dashboard live trends render
+
+## Backend (Managed service)
 - [ ] Set `SECRET_KEY` in production
 - [ ] Set `DATABASE_URL` to PostgreSQL
 - [ ] Set `REDIS_URL` to the managed Redis endpoint
@@ -10,13 +18,6 @@ Use this checklist before you ship TrendPulse AI.
 - [ ] Verify `/api/health`
 - [ ] Verify `/api/trends/live`
 - [ ] Verify auth endpoints
-
-## Frontend
-- [ ] Set `NEXT_PUBLIC_API_URL`
-- [ ] Verify login page
-- [ ] Verify register page
-- [ ] Verify dashboard redirect behavior
-- [ ] Verify dashboard live trends render
 
 ## GitHub Actions
 - [ ] Frontend build passes
