@@ -19,7 +19,6 @@ import { clearAuthTokens, hasAccessToken } from "../../lib/auth";
   summary?: string | null;
   url?: string | null;
 };
-};
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
