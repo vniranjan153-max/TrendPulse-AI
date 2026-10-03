@@ -8,6 +8,7 @@ import { TrendCard } from "../../components/trend-card";
 import { clearAuthTokens, hasAccessToken } from "../../lib/auth";
 
 type Trend = {
+  type Trend = {
   id: string | number;
   topic: string;
   source: string;
@@ -17,6 +18,7 @@ type Trend = {
   change?: string;
   summary?: string | null;
   url?: string | null;
+};
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
