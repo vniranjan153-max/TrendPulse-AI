@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { hasAccessToken, setAuthTokens } from "../../lib/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -14,8 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("trendpulse_access_token");
-    if (token) {
+    if (hasAccessToken()) {
       router.replace("/dashboard");
     }
   }, [router]);
@@ -37,8 +37,7 @@ export default function LoginPage() {
         throw new Error(data.detail ?? "Login failed");
       }
 
-      localStorage.setItem("trendpulse_access_token", data.access_token);
-      localStorage.setItem("trendpulse_refresh_token", data.refresh_token);
+      setAuthTokens(data.access_token, data.refresh_token);
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
