@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "../../components/sidebar";
 import { TrendCard } from "../../components/trend-card";
 
@@ -13,20 +17,59 @@ type Trend = {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-async function getLiveTrends(): Promise<Trend[]> {
-  const response = await fetch(`${API_URL}/api/trends/live`, {
-    cache: "no-store",
-  });
+export default function DashboardPage() {
+  const router = useRouter();
+  const [tokenReady, setTokenReady] = useState(false);
+  const [trends, setTrends] = useState<Trend[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!response.ok) {
-    return [];
+  useEffect(() => {
+    const token = localStorage.getItem("trendpulse_access_token");
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+    setTokenReady(true);
+  }, [router]);
+
+  useEffect(() => {
+    if (!tokenReady) return;
+
+    let cancelled = false;
+
+    async function loadTrends() {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/api/trends/live`, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Failed to load trends");
+        }
+        const data = (await response.json()) as Trend[];
+        if (!cancelled) {
+          setTrends(data);
+        }
+      } catch {
+        if (!cancelled) {
+          setTrends([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadTrends();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tokenReady]);
+
+  if (!tokenReady) {
+    return null;
   }
 
-  return response.json();
-}
-
-export default async function DashboardPage() {
-  const trends = await getLiveTrends();
   const momentumAverage = trends.length
     ? Math.round(trends.reduce((sum, item) => sum + item.momentum, 0) / trends.length)
     : 0;
@@ -41,9 +84,16 @@ export default async function DashboardPage() {
             <p className="kicker">LIVE DASHBOARD</p>
             <h1 style={{ margin: 0 }}>TrendPulse AI</h1>
           </div>
-          <a className="button ghost" href="/login">
+          <button
+            className="button ghost"
+            onClick={() => {
+              localStorage.removeItem("trendpulse_access_token");
+              localStorage.removeItem("trendpulse_refresh_token");
+              router.push("/login");
+            }}
+          >
             Log out
-          </a>
+          </button>
         </div>
 
         <div className="grid">
@@ -71,7 +121,9 @@ export default async function DashboardPage() {
           </div>
 
           <div className="list">
-            {trends.length ? (
+            {loading ? (
+              <p className="muted">Loading live trend data…</p>
+            ) : trends.length ? (
               trends.map((trend) => <TrendCard key={trend.id} {...trend} />)
             ) : (
               <p className="muted">No live trend data available yet.</p>
