@@ -15,6 +15,8 @@ type Trend = {
   momentum: number;
   summary?: string | null;
   url?: string | null;
+  score?: number;
+  change?: string;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -124,7 +126,16 @@ export default function DashboardPage() {
             {loading ? (
               <p className="muted">Loading live trend data…</p>
             ) : trends.length ? (
-              trends.map((trend) => <TrendCard key={trend.id} {...trend} />)
+              trends.map((trend) => (
+                <TrendCard
+                  key={trend.id}
+                  topic={trend.topic}
+                  source={trend.source}
+                  category={trend.category}
+                  score={trend.score ?? trend.momentum}
+                  change={trend.change ?? `${trend.momentum > 0 ? "+" : ""}${trend.momentum}%`}
+                />
+              ))
             ) : (
               <p className="muted">No live trend data available yet.</p>
             )}
