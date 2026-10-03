@@ -1,13 +1,37 @@
 import { Sidebar } from "../../components/sidebar";
 import { TrendCard } from "../../components/trend-card";
 
-const trends = [
-  { topic: "AI Agents", source: "Hacker News", category: "AI", score: 94, change: "+28.4%" },
-  { topic: "Local-first Apps", source: "GitHub", category: "DevTools", score: 86, change: "+17.2%" },
-  { topic: "Small Language Models", source: "GitHub", category: "AI", score: 82, change: "+13.7%" },
-];
+type Trend = {
+  id: string | number;
+  topic: string;
+  source: string;
+  category: string;
+  momentum: number;
+  summary?: string | null;
+  url?: string | null;
+};
 
-export default function DashboardPage() {
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+async function getLiveTrends(): Promise<Trend[]> {
+  const response = await fetch(`${API_URL}/api/trends/live`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return response.json();
+}
+
+export default async function DashboardPage() {
+  const trends = await getLiveTrends();
+  const momentumAverage = trends.length
+    ? Math.round(trends.reduce((sum, item) => sum + item.momentum, 0) / trends.length)
+    : 0;
+  const sources = new Set(trends.map((item) => item.source)).size;
+
   return (
     <main className="dashboard">
       <Sidebar />
@@ -17,13 +41,24 @@ export default function DashboardPage() {
             <p className="kicker">LIVE DASHBOARD</p>
             <h1 style={{ margin: 0 }}>TrendPulse AI</h1>
           </div>
-          <a className="button ghost" href="/login">Log out</a>
+          <a className="button ghost" href="/login">
+            Log out
+          </a>
         </div>
 
         <div className="grid">
-          <div className="metricCard"><small>Live trends</small><strong>128</strong></div>
-          <div className="metricCard"><small>Momentum avg</small><strong>87.4</strong></div>
-          <div className="metricCard"><small>Sources</small><strong>4</strong></div>
+          <div className="metricCard">
+            <small>Live trends</small>
+            <strong>{trends.length}</strong>
+          </div>
+          <div className="metricCard">
+            <small>Momentum avg</small>
+            <strong>{momentumAverage}</strong>
+          </div>
+          <div className="metricCard">
+            <small>Sources</small>
+            <strong>{sources}</strong>
+          </div>
         </div>
 
         <section className="panel">
@@ -36,9 +71,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="list">
-            {trends.map((trend) => (
-              <TrendCard key={trend.topic} {...trend} />
-            ))}
+            {trends.length ? (
+              trends.map((trend) => <TrendCard key={trend.id} {...trend} />)
+            ) : (
+              <p className="muted">No live trend data available yet.</p>
+            )}
           </div>
         </section>
       </section>
