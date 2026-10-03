@@ -17,8 +17,6 @@ type Trend = {
   change?: string;
   summary?: string | null;
   url?: string | null;
-  score?: number;
-  change?: string;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
