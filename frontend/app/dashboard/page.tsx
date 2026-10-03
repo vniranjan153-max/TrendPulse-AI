@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { Sidebar } from "../../components/sidebar";
 import { TrendCard } from "../../components/trend-card";
+import { clearAuthTokens, hasAccessToken } from "../../lib/auth";
 
 type Trend = {
   id: string | number;
@@ -24,8 +26,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("trendpulse_access_token");
-    if (!token) {
+    if (!hasAccessToken()) {
       router.replace("/login");
       return;
     }
@@ -87,8 +88,7 @@ export default function DashboardPage() {
           <button
             className="button ghost"
             onClick={() => {
-              localStorage.removeItem("trendpulse_access_token");
-              localStorage.removeItem("trendpulse_refresh_token");
+              clearAuthTokens();
               router.push("/login");
             }}
           >
