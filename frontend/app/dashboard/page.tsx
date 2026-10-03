@@ -7,7 +7,7 @@ import { Sidebar } from "../../components/sidebar";
 import { TrendCard } from "../../components/trend-card";
 import { clearAuthTokens, hasAccessToken } from "../../lib/auth";
 
-type Trend = {
+
   type Trend = {
   id: string | number;
   topic: string;
