@@ -3,11 +3,12 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .api.trends import router as trends_router
 from .config import settings
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.1.0",
+    version="0.2.0",
     description="Backend API for TrendPulse AI.",
 )
 
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(trends_router)
+
 
 @app.get("/api/health")
 def health() -> dict[str, str]:
@@ -29,31 +32,25 @@ def health() -> dict[str, str]:
     }
 
 
-@app.get("/api/trends")
-def list_trends() -> list[dict]:
+@app.get("/api/trends/demo")
+def demo_trends() -> list[dict]:
     return [
         {
             "id": "ai-agents",
             "topic": "AI Agents",
+            "source": "Demo",
             "category": "AI",
             "momentum": 94,
-            "change": 28.4,
+            "engagement": 1200,
             "summary": "Autonomous agent frameworks are accelerating across developer communities.",
         },
         {
             "id": "local-first",
             "topic": "Local-first Apps",
+            "source": "Demo",
             "category": "Developer Tools",
             "momentum": 86,
-            "change": 17.2,
+            "engagement": 860,
             "summary": "Developers are increasingly exploring offline-capable collaborative apps.",
-        },
-        {
-            "id": "small-models",
-            "topic": "Small Language Models",
-            "category": "AI",
-            "momentum": 82,
-            "change": 13.7,
-            "summary": "Compact models are gaining attention for lower-cost private deployments.",
         },
     ]
