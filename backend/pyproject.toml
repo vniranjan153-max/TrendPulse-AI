@@ -1,3 +1,18 @@
+[project]
+name = "trendpulse-backend"
+version = "0.1.0"
+description = "TrendPulse AI Backend"
+requires-python = ">=3.12"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [tool.black]
 line-length = 88
 target-version = ["py312"]
